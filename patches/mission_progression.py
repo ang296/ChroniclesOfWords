@@ -287,3 +287,27 @@ replace(game_content, '''                { entry -> rules.indexOfFirst { rule ->
                 { entry -> entry.key.second }''', '''                { entry -> rules.indexOfFirst { rule -> rule.title == entry.key.first }.let { if (it < 0) rules.size else it } },
                 { entry -> entry.key.first },
                 { entry -> entry.key.second }''')
+
+
+# Copy the progressive vowel/consonant alternation bank (5 missions x 8 tasks).
+alternation_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/AlternationMissionContent.kt"
+alternation_target = root / "app/src/main/java/ua/chroniclesofwords/learning/AlternationMissionContent.kt"
+alternation_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(alternation_source, alternation_target)
+
+# Register the topic in the rule catalogue and append its 40 exercises.
+replace(game_content, '''            exceptions = "Не кожен збіг звуків передаємо двома буквами; перевіряй будову слова та граматичну форму."
+        )
+    )''', '''            exceptions = "Не кожен збіг звуків передаємо двома буквами; перевіряй будову слова та граматичну форму."
+        ),
+        RuleCard(
+            id = "alternation",
+            title = "Чергування голосних і приголосних",
+            paragraph = "Чергування голосних і приголосних",
+            explanation = "Під час словозміни й творення споріднених слів голосні та приголосні в корені можуть змінюватися закономірно: стіл — стола, нога — ніжка — нозі, пекти — печу.",
+            mnemonic = "Спочатку визнач корінь і граматичну форму, а тоді перевір, який звук чергується.",
+            examples = "стіл — стола; гора — гірський; рука — ручка — руці; могти — можу.",
+            exceptions = "Не в кожній формі споріднених слів є чергування; враховуй значення слова та конкретну граматичну форму."
+        )
+    )''')
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises''')
