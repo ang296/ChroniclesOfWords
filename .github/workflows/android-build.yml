@@ -41,6 +41,9 @@ jobs:
           echo "PROJECT_DIR=$project_dir" >> "$GITHUB_ENV"
           echo "Android project found at: $project_dir"
 
+      - name: Apply mission progression fix
+        run: python3 "$GITHUB_WORKSPACE/patches/mission_progression.py" "$PROJECT_DIR"
+
       - name: Upload extracted Android source for inspection
         uses: actions/upload-artifact@v4
         with:
