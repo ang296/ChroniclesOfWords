@@ -232,26 +232,13 @@ apostrophe_target.parent.mkdir(parents=True, exist_ok=True)
 shutil.copy2(apostrophe_source, apostrophe_target)
 replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises''')
 
+
 # Copy the soft-sign curriculum batch (five missions, eight unique exercises each).
 soft_sign_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/SoftSignMissionContent.kt"
 soft_sign_target = root / "app/src/main/java/ua/chroniclesofwords/learning/SoftSignMissionContent.kt"
 soft_sign_target.parent.mkdir(parents=True, exist_ok=True)
 shutil.copy2(soft_sign_source, soft_sign_target)
 replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises''')
-replace(game_content, '''            exceptions = "Апостроф не ставимо, коли перед губним є інший кореневий приголосний, що пом’якшує його в нормативних словах."
-        )
-    )''', '''            exceptions = "Апостроф не ставимо, коли перед губним є інший кореневий приголосний, що пом’якшує його в нормативних словах."
-        ),
-        RuleCard(
-            id = "soft-sign",
-            title = "М’який знак",
-            paragraph = "§ 29",
-            explanation = "М’який знак позначає м’якість приголосного в кінці слова та в окремих позиціях усередині слова; написання залежить від будови й форми слова.",
-            mnemonic = "Перевір позицію приголосного, словотвір і граматичну форму.",
-            examples = "кінь, день, лялька, різьбяр, трьох.",
-            exceptions = "У багатьох сполуках і формах ь не пишемо: гілці, свято, цвях."
-        )
-    )''')
 
 replace(game_content, '''            exceptions = "На межі префікса й кореня можуть виникати збіги однакових або різних приголосних."
         )
@@ -265,6 +252,20 @@ replace(game_content, '''            exceptions = "На межі префікс�
             mnemonic = "Перевір губний, р, префікс і вимову перед я, ю, є, ї.",
             examples = "п’ять, бур’ян, під’їзд, об’єкт, дит’ясла.",
             exceptions = "Апостроф не ставимо, коли перед губним є інший кореневий приголосний, що пом’якшує його в нормативних словах."
+        )
+    )''')
+replace(game_content, '''            exceptions = "Апостроф не ставимо, коли перед губним є інший кореневий приголосний, що пом’якшує його в нормативних словах."
+        )
+    )''', '''            exceptions = "Апостроф не ставимо, коли перед губним є інший кореневий приголосний, що пом’якшує його в нормативних словах."
+        ),
+        RuleCard(
+            id = "soft-sign",
+            title = "М’який знак",
+            paragraph = "§ 29",
+            explanation = "М’який знак позначає м’якість приголосного в кінці слова та в окремих позиціях усередині слова; написання залежить від будови й форми слова.",
+            mnemonic = "Перевір позицію приголосного, словотвір і граматичну форму.",
+            examples = "кінь, день, лялька, різьбяр, трьох.",
+            exceptions = "У багатьох сполуках і формах ь не пишемо: гілці, свято, цвях."
         )
     )''')
 
