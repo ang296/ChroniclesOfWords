@@ -334,3 +334,25 @@ replace(game_content, '''            exceptions = "Не в кожній форм
         )
     )''')
 replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises''')
+
+# Copy and register the consonant-simplification bank (five missions x eight tasks).
+simplification_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/SimplificationMissionContent.kt"
+simplification_target = root / "app/src/main/java/ua/chroniclesofwords/learning/SimplificationMissionContent.kt"
+simplification_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(simplification_source, simplification_target)
+
+replace(game_content, '''            exceptions = "Не всі дієслова мають таке чергування; у деяких моделях змінюється ціла група приголосних."
+        )
+    )''', '''            exceptions = "Не всі дієслова мають таке чергування; у деяких моделях змінюється ціла група приголосних."
+        ),
+        RuleCard(
+            id = "simplification",
+            title = "Спрощення в групах приголосних",
+            paragraph = "Спрощення в групах приголосних",
+            explanation = "У низці груп приголосних один звук випадає у вимові й на письмі: честь — чесний, тиждень — тижневий, проїзд — проїзний. У частині слів приголосний зберігаємо.",
+            mnemonic = "Знайди твірну основу, визнач групу приголосних і перевір, чи не належить слово до винятків.",
+            examples = "чесний, радісний, корисний, тижневий, проїзний; але пестливий, кістлявий, шістнадцять.",
+            exceptions = "Т зберігаємо, зокрема, у словах пестливий, кістлявий, хвастливий, шістнадцять, шістсот, зап'ястний, контрастний, баластний."
+        )
+    )''')
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises + SimplificationMissionContent.exercises''')
