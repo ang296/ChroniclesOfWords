@@ -311,3 +311,26 @@ replace(game_content, '''            exceptions = "Не кожен збіг зв
         )
     )''')
 replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises''')
+
+
+# Copy and register the focused verb-consonant alternation bank (5 missions x 8 tasks).
+verb_alternation_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/VerbConsonantAlternationMissionContent.kt"
+verb_alternation_target = root / "app/src/main/java/ua/chroniclesofwords/learning/VerbConsonantAlternationMissionContent.kt"
+verb_alternation_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(verb_alternation_source, verb_alternation_target)
+
+replace(game_content, '''            exceptions = "Не в кожній формі споріднених слів є чергування; враховуй значення слова та конкретну граматичну форму."
+        )
+    )''', '''            exceptions = "Не в кожній формі споріднених слів є чергування; враховуй значення слова та конкретну граматичну форму."
+        ),
+        RuleCard(
+            id = "verb-consonant-alternation",
+            title = "Чергування приголосних у дієсловах",
+            paragraph = "Чергування приголосних у дієсловах",
+            explanation = "Під час творення особових форм дієслів приголосні кореня можуть чергуватися: берегти — бережу, пекти — печу, просити — прошу, ходити — ходжу, чистити — чищу.",
+            mnemonic = "Не перенось основу інфінітива механічно: перевір нормативну особову форму й тип чергування.",
+            examples = "берегти — бережу; пекти — печу; просити — прошу; їздити — їжджу; чистити — чищу.",
+            exceptions = "Не всі дієслова мають таке чергування; у деяких моделях змінюється ціла група приголосних."
+        )
+    )''')
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises''')
