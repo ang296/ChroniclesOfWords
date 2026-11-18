@@ -170,4 +170,6 @@ replace(g, '''    )
 }''')
 replace(m, 'GameContent.exercises.groupBy { it.topic }.entries.toList()', 'GameContent.missions')
 
+replace(m, 'GameContent.exercises.groupBy { it.topic }.entries.toList()', 'GameContent.missions')
+
 print("Mission progression patch applied.")
