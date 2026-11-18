@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android APK and App Bundle
 
 on:
   push:
@@ -46,16 +46,16 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build debug APK
+      - name: Build debug APK and AAB
         shell: bash
         run: |
           set -euo pipefail
           cd "$PROJECT_DIR"
           if [ -f ./gradlew ]; then
             chmod +x ./gradlew
-            ./gradlew --no-daemon assembleDebug
+            ./gradlew --no-daemon assembleDebug bundleDebug
           else
-            gradle --no-daemon assembleDebug
+            gradle --no-daemon assembleDebug bundleDebug
           fi
 
       - name: Upload APK
@@ -63,5 +63,13 @@ jobs:
         with:
           name: chronicles-of-words-debug-apk
           path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Android App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: chronicles-of-words-debug-aab
+          path: ${{ env.PROJECT_DIR }}/app/build/outputs/bundle/debug/*.aab
           if-no-files-found: error
           retention-days: 14
