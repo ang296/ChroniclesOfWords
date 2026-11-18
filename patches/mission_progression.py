@@ -149,4 +149,25 @@ replace(d, '    companion object {', '''    companion object {
 replace(d, '''                    "chronicles_of_words.db"
                 ).build().also { INSTANCE = it }''', '''                    "chronicles_of_words.db"
                 ).addMigrations(MIGRATION_1_2).build().also { INSTANCE = it }''')
+
+# Split each rule into ordered difficulty missions instead of one topic-wide mission.
+g = "app/src/main/java/ua/chroniclesofwords/learning/GameContent.kt"
+replace(g, '''    val paragraph: String
+)''', '''    val paragraph: String,
+    val missionLevel: Int = 1
+)''')
+replace(g, '''    val exercises = listOf(''', '''    val exercises = listOf(''')
+replace(g, '''    )
+}''', '''    )
+
+    // Mission identity is (rule, difficulty level), not the rule name alone.
+    // Content can grow without merging later missions back into the first one.
+    val missions: List<Map.Entry<String, List<Exercise>>>
+        get() = exercises
+            .groupBy { "${it.topic} · Місія ${it.missionLevel}" }
+            .entries
+            .toList()
+}''')
+replace(m, 'GameContent.exercises.groupBy { it.topic }.entries.toList()', 'GameContent.missions')
+
 print("Mission progression patch applied.")
