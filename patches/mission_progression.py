@@ -243,7 +243,7 @@ doubling_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua
 doubling_target = root / "app/src/main/java/ua/chroniclesofwords/learning/DoublingMissionContent.kt"
 doubling_target.parent.mkdir(parents=True, exist_ok=True)
 shutil.copy2(doubling_source, doubling_target)
-replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises''')
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises''')
 
 replace(game_content, '''            exceptions = "На межі префікса й кореня можуть виникати збіги однакових або різних приголосних."
         )
