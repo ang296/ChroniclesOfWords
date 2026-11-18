@@ -149,4 +149,232 @@ replace(d, '    companion object {', '''    companion object {
 replace(d, '''                    "chronicles_of_words.db"
                 ).build().also { INSTANCE = it }''', '''                    "chronicles_of_words.db"
                 ).addMigrations(MIGRATION_1_2).build().also { INSTANCE = it }''')
+
+# Split each rule into ordered difficulty missions instead of one topic-wide mission.
+g = "app/src/main/java/ua/chroniclesofwords/learning/GameContent.kt"
+replace(g, '''    val paragraph: String
+)''', '''    val paragraph: String,
+    val missionLevel: Int = 1
+)''')
+replace(g, '''    val exercises = listOf(''', '''    val exercises = listOf(''')
+
+replace(m, 'GameContent.exercises.groupBy { it.topic }.entries.toList()', 'GameContent.missions')
+
+replace(m, 'GameContent.exercises.groupBy { it.topic }.entries.toList()', 'GameContent.missions')
+
+
+
+# Correct two pre-existing content defects exposed by the expanded rule bank.
+replace(g, 'У суфіксі -ськ- пишемо ь після н за відповідним правилом творення прикметників.', 'У прикметнику український суфікс -ськ- пишемо без ь після н.')
+replace(g, 'listOf("тиждневий", "тижневий", "тиждневий")', 'listOf("тиждневий", "тижневий", "тиждньовий")')
+
+# Add the five-stage content bank (20 examples x 5 difficulty tiers).
+g = "app/src/main/java/ua/chroniclesofwords/learning/GameContent.kt"
+replace(g, '''    )
+}''', '''    ) + MissionContent.exercises
+
+    val missions: List<Map.Entry<String, List<Exercise>>>
+        get() = exercises.groupBy { it.topic to it.missionLevel }.entries
+            .sortedWith(compareBy(
+                { entry -> rules.indexOfFirst { rule -> rule.title == entry.key.first } },
+                { entry -> entry.key.second }
+            ))
+            .map { java.util.AbstractMap.SimpleEntry(
+                "${it.key.first} · Місія ${it.key.second}", it.value
+            ) }
+}''')
+mission_file = root / "app/src/main/java/ua/chroniclesofwords/learning/MissionContent.kt"
+mission_file.write_text("package ua.chroniclesofwords.learning\n\nobject MissionContent {\n    private data class Seed(\n        val topic: String, val word: String, val wrong1: String, val wrong2: String,\n        val explanation: String, val reference: String\n    )\n\n    private val seeds = listOf(\n        Seed(\"Апостроф\",\"п’ятниця\",\"пятниця\",\"пьятниця\",\"Після губного п перед я пишемо апостроф.\",\"§ 7\"),\n        Seed(\"Апостроф\",\"під’їзд\",\"підїзд\",\"підьїзд\",\"Після префікса під- перед ї ставимо апостроф.\",\"§ 7\"),\n        Seed(\"Апостроф\",\"комп’ютер\",\"компютер\",\"компьютер\",\"Після губного п перед ю пишемо апостроф.\",\"§ 7\"),\n        Seed(\"Апостроф\",\"кар’єра\",\"карєра\",\"карьєра\",\"Після р перед є в цьому слові пишемо апостроф.\",\"§ 7\"),\n        Seed(\"Апостроф\",\"торф’яний\",\"торфяний\",\"торфьяний\",\"Після губного ф перед я пишемо апостроф.\",\"§ 7\"),\n\n        Seed(\"М’який знак\",\"різьбяр\",\"різбяр\",\"різьбьяр\",\"У корені різьб- пишемо ь.\",\"§ 26\"),\n        Seed(\"М’який знак\",\"пальці\",\"палці\",\"палььці\",\"У слові пальці ь позначає м’якість л.\",\"§ 26\"),\n        Seed(\"М’який знак\",\"доньчин\",\"дончин\",\"донььчин\",\"У прикметнику доньчин зберігаємо ь основи.\",\"§ 26\"),\n        Seed(\"М’який знак\",\"кінчик\",\"кіньчик\",\"кінььчик\",\"Перед суфіксом -чик після н м’який знак не пишемо.\",\"§ 27\"),\n        Seed(\"М’який знак\",\"чотирма\",\"чотирьма\",\"чотирььма\",\"Нормативна форма — чотирма, без ь.\",\"§ 27\"),\n\n        Seed(\"Спрощення\",\"тижневий\",\"тиждневий\",\"тижднний\",\"У слові тижневий д випадає.\",\"§ 28\"),\n        Seed(\"Спрощення\",\"проїзний\",\"проїздний\",\"проїззний\",\"У групі здн випадає д: проїзд — проїзний.\",\"§ 28\"),\n        Seed(\"Спрощення\",\"щасливий\",\"щастливий\",\"щастливвий\",\"У групі стл відбувається спрощення.\",\"§ 28\"),\n        Seed(\"Спрощення\",\"пестливий\",\"песливий\",\"пестливвий\",\"У слові пестливий т зберігаємо — це виняток.\",\"§ 28, винятки\"),\n        Seed(\"Спрощення\",\"шістнадцять\",\"шіснадцять\",\"шістнадцятьь\",\"У числівнику шістнадцять т зберігаємо — це виняток.\",\"§ 28, винятки\"),\n\n        Seed(\"Подвоєння\",\"життя\",\"житя\",\"житття\",\"У слові життя подвоєння т зумовлене подовженням.\",\"§ 30\"),\n        Seed(\"Подвоєння\",\"віддати\",\"відати\",\"відддати\",\"На межі префікса від- і кореня виникає збіг дд.\",\"§ 29\"),\n        Seed(\"Подвоєння\",\"знання\",\"знаня\",\"знанння\",\"У слові знання маємо подовження н перед я.\",\"§ 30\"),\n        Seed(\"Подвоєння\",\"осінній\",\"осіний\",\"осіннній\",\"У прикметнику осінній подвоюємо н.\",\"§ 29–30\"),\n        Seed(\"Подвоєння\",\"роззброїти\",\"розброїти\",\"розззброїти\",\"На межі префікса роз- і кореня зберігаємо збіг зз.\",\"§ 29\")\n    )\n\n    private val prompts = listOf(\n        \"Обери нормативне написання слова.\",\n        \"Знайди форму, у якій правильно застосовано правило.\",\n        \"Визнач правильний варіант серед орфографічно близьких форм.\",\n        \"Перевір написання: обери єдиний нормативний варіант.\",\n        \"Розв’яжи складніше завдання: застосуй правило й урахуй винятки.\"\n    )\n\n    val exercises: List<Exercise> = (1..5).flatMap { level ->\n        seeds.mapIndexed { index, seed ->\n            val options = when ((level + index) % 3) {\n                0 -> listOf(seed.word, seed.wrong1, seed.wrong2)\n                1 -> listOf(seed.wrong1, seed.word, seed.wrong2)\n                else -> listOf(seed.wrong2, seed.wrong1, seed.word)\n            }\n            val answer = options.indexOf(seed.word)\n            Exercise(\n                id = \"extra-${level}-${index}\",\n                topic = seed.topic,\n                prompt = prompts[level - 1],\n                options = options,\n                correctIndex = answer,\n                explanation = seed.explanation + if (level >= 4) \" На цьому етапі важливо відрізняти загальне правило від позиційних умов і винятків.\" else \"\",\n                paragraph = seed.reference,\n                missionLevel = level\n            )\n        }\n    }\n}\n", encoding="utf-8")
+
 print("Mission progression patch applied.")
+
+
+# Copy the separately maintained expanded exercise bank into the extracted Android project.
+import shutil
+source_bank = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/ExtendedMissionContent.kt"
+target_bank = root / "app/src/main/java/ua/chroniclesofwords/learning/ExtendedMissionContent.kt"
+target_bank.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(source_bank, target_bank)
+
+# Register the new rule cards and append the 80 distinct tasks (2 topics x 5 missions x 8 tasks).
+game_content = "app/src/main/java/ua/chroniclesofwords/learning/GameContent.kt"
+replace(game_content, '''        )
+    )
+
+    val exercises = listOf(''', '''        ),
+        RuleCard(
+            id = "not-particle",
+            title = "НЕ з різними частинами мови",
+            paragraph = "§ 40",
+            explanation = "Написання НЕ залежить від частини мови, значення слова, наявності протиставлення та залежних слів.",
+            mnemonic = "Перевір частину мови, протиставлення й залежні слова.",
+            examples = "невідомий; не знає; не правда, а вигадка; не прочитана учнем книжка.",
+            exceptions = "Є слова, що без НЕ не вживаються, а також контекстуальні випадки."
+        ),
+        RuleCard(
+            id = "prefixes",
+            title = "Префікси з-/с-, роз-/без-",
+            paragraph = "§ 31",
+            explanation = "Префікс с- пишемо перед к, п, т, ф, х; в інших випадках переважно з-. У префіксах роз-, без- букву з зберігаємо.",
+            mnemonic = "Кафе «Птах» допомагає згадати с-; роз- і без- зберігають з.",
+            examples = "сказати, спитати, сховати; зробити, зшити; розписати, безхмарний.",
+            exceptions = "На межі префікса й кореня можуть виникати збіги однакових або різних приголосних."
+        )
+    )
+
+    val exercises = listOf(''')
+replace(game_content, '''    ) + MissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises''')
+
+# Copy the apostrophe curriculum batch (one complete five-mission topic).
+apostrophe_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/ApostropheMissionContent.kt"
+apostrophe_target = root / "app/src/main/java/ua/chroniclesofwords/learning/ApostropheMissionContent.kt"
+apostrophe_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(apostrophe_source, apostrophe_target)
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises''')
+
+
+# Copy the soft-sign curriculum batch (five missions, eight unique exercises each).
+soft_sign_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/SoftSignMissionContent.kt"
+soft_sign_target = root / "app/src/main/java/ua/chroniclesofwords/learning/SoftSignMissionContent.kt"
+soft_sign_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(soft_sign_source, soft_sign_target)
+# Copy the doubled-consonant curriculum batch (five missions, eight tasks each).
+doubling_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/DoublingMissionContent.kt"
+doubling_target = root / "app/src/main/java/ua/chroniclesofwords/learning/DoublingMissionContent.kt"
+doubling_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(doubling_source, doubling_target)
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises''')
+
+replace(game_content, '''            exceptions = "На межі префікса й кореня можуть виникати збіги однакових або різних приголосних."
+        )
+    )''', '''            exceptions = "На межі префікса й кореня можуть виникати збіги однакових або різних приголосних."
+        ),
+        RuleCard(
+            id = "apostrophe",
+            title = "Апостроф",
+            paragraph = "§ 7",
+            explanation = "Апостроф пишемо перед я, ю, є, ї після губних, р та в окремих позиціях після префіксів і першої частини складного слова.",
+            mnemonic = "Перевір губний, р, префікс і вимову перед я, ю, є, ї.",
+            examples = "п’ять, бур’ян, під’їзд, об’єкт, дит’ясла.",
+            exceptions = "Апостроф не ставимо, коли перед губним є інший кореневий приголосний, що пом’якшує його в нормативних словах."
+        )
+    )''')
+replace(game_content, '''            exceptions = "Апостроф не ставимо, коли перед губним є інший кореневий приголосний, що пом’якшує його в нормативних словах."
+        )
+    )''', '''            exceptions = "Апостроф не ставимо, коли перед губним є інший кореневий приголосний, що пом’якшує його в нормативних словах."
+        ),
+        RuleCard(
+            id = "soft-sign",
+            title = "М’який знак",
+            paragraph = "§ 29",
+            explanation = "М’який знак позначає м’якість приголосного в кінці слова та в окремих позиціях усередині слова; написання залежить від будови й форми слова.",
+            mnemonic = "Перевір позицію приголосного, словотвір і граматичну форму.",
+            examples = "кінь, день, лялька, різьбяр, трьох.",
+            exceptions = "У багатьох сполуках і формах ь не пишемо: гілці, свято, цвях."
+        ),
+        RuleCard(
+            id = "doubling",
+            title = "Подвоєння приголосних",
+            paragraph = "Подвоєння приголосних: подовження та збіг на межі морфем",
+            explanation = "Подвоєння виникає внаслідок подовження приголосних в окремих позиціях, а також на межі префікса й кореня або кореня й суфікса.",
+            mnemonic = "З’ясуй, чи це подовження в основі слова, чи збіг однакових приголосних на межі морфем.",
+            examples = "життя, знання, ніччю, віддати, роззброїти, осінній.",
+            exceptions = "Не кожен збіг звуків передаємо двома буквами; перевіряй будову слова та граматичну форму."
+        )
+    )''')
+
+replace(game_content, '''                { entry -> rules.indexOfFirst { rule -> rule.title == entry.key.first } },
+                { entry -> entry.key.second }''', '''                { entry -> rules.indexOfFirst { rule -> rule.title == entry.key.first }.let { if (it < 0) rules.size else it } },
+                { entry -> entry.key.first },
+                { entry -> entry.key.second }''')
+
+
+# Copy the progressive vowel/consonant alternation bank (5 missions x 8 tasks).
+alternation_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/AlternationMissionContent.kt"
+alternation_target = root / "app/src/main/java/ua/chroniclesofwords/learning/AlternationMissionContent.kt"
+alternation_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(alternation_source, alternation_target)
+
+# Register the topic in the rule catalogue and append its 40 exercises.
+replace(game_content, '''            exceptions = "Не кожен збіг звуків передаємо двома буквами; перевіряй будову слова та граматичну форму."
+        )
+    )''', '''            exceptions = "Не кожен збіг звуків передаємо двома буквами; перевіряй будову слова та граматичну форму."
+        ),
+        RuleCard(
+            id = "alternation",
+            title = "Чергування голосних і приголосних",
+            paragraph = "Чергування голосних і приголосних",
+            explanation = "Під час словозміни й творення споріднених слів голосні та приголосні в корені можуть змінюватися закономірно: стіл — стола, нога — ніжка — нозі, пекти — печу.",
+            mnemonic = "Спочатку визнач корінь і граматичну форму, а тоді перевір, який звук чергується.",
+            examples = "стіл — стола; гора — гірський; рука — ручка — руці; могти — можу.",
+            exceptions = "Не в кожній формі споріднених слів є чергування; враховуй значення слова та конкретну граматичну форму."
+        )
+    )''')
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises''')
+
+
+# Copy and register the focused verb-consonant alternation bank (5 missions x 8 tasks).
+verb_alternation_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/VerbConsonantAlternationMissionContent.kt"
+verb_alternation_target = root / "app/src/main/java/ua/chroniclesofwords/learning/VerbConsonantAlternationMissionContent.kt"
+verb_alternation_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(verb_alternation_source, verb_alternation_target)
+
+replace(game_content, '''            exceptions = "Не в кожній формі споріднених слів є чергування; враховуй значення слова та конкретну граматичну форму."
+        )
+    )''', '''            exceptions = "Не в кожній формі споріднених слів є чергування; враховуй значення слова та конкретну граматичну форму."
+        ),
+        RuleCard(
+            id = "verb-consonant-alternation",
+            title = "Чергування приголосних у дієсловах",
+            paragraph = "Чергування приголосних у дієсловах",
+            explanation = "Під час творення особових форм дієслів приголосні кореня можуть чергуватися: берегти — бережу, пекти — печу, просити — прошу, ходити — ходжу, чистити — чищу.",
+            mnemonic = "Не перенось основу інфінітива механічно: перевір нормативну особову форму й тип чергування.",
+            examples = "берегти — бережу; пекти — печу; просити — прошу; їздити — їжджу; чистити — чищу.",
+            exceptions = "Не всі дієслова мають таке чергування; у деяких моделях змінюється ціла група приголосних."
+        )
+    )''')
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises''')
+
+# Copy and register the consonant-simplification bank (five missions x eight tasks).
+simplification_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/SimplificationMissionContent.kt"
+simplification_target = root / "app/src/main/java/ua/chroniclesofwords/learning/SimplificationMissionContent.kt"
+simplification_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(simplification_source, simplification_target)
+
+replace(game_content, '''            exceptions = "Не всі дієслова мають таке чергування; у деяких моделях змінюється ціла група приголосних."
+        )
+    )''', '''            exceptions = "Не всі дієслова мають таке чергування; у деяких моделях змінюється ціла група приголосних."
+        ),
+        RuleCard(
+            id = "simplification",
+            title = "Спрощення в групах приголосних",
+            paragraph = "Спрощення в групах приголосних",
+            explanation = "У низці груп приголосних один звук випадає у вимові й на письмі: честь — чесний, тиждень — тижневий, проїзд — проїзний. У частині слів приголосний зберігаємо.",
+            mnemonic = "Знайди твірну основу, визнач групу приголосних і перевір, чи не належить слово до винятків.",
+            examples = "чесний, радісний, корисний, тижневий, проїзний; але пестливий, кістлявий, шістнадцять.",
+            exceptions = "Т зберігаємо, зокрема, у словах пестливий, кістлявий, хвастливий, шістнадцять, шістсот, зап'ястний, контрастний, баластний."
+        )
+    )''')
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises + SimplificationMissionContent.exercises''')
+
+# Copy and register the pre-/pri- prefix bank (five missions x eight tasks).
+pre_pri_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/PrePriPrefixesMissionContent.kt"
+pre_pri_target = root / "app/src/main/java/ua/chroniclesofwords/learning/PrePriPrefixesMissionContent.kt"
+pre_pri_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(pre_pri_source, pre_pri_target)
+
+replace(game_content, '''            exceptions = "Т зберігаємо, зокрема, у словах пестливий, кістлявий, хвастливий, шістнадцять, шістсот, зап'ястний, контрастний, баластний."
+        )
+    )''', '''            exceptions = "Т зберігаємо, зокрема, у словах пестливий, кістлявий, хвастливий, шістнадцять, шістсот, зап'ястний, контрастний, баластний."
+        ),
+        RuleCard(
+            id = "pre-pri-prefixes",
+            title = "Префікси пре-, при-, прі-",
+            paragraph = "Префікси пре-, при-, прі-",
+            explanation = "Пре- часто передає високий ступінь ознаки, при- — наближення, приєднання або неповноту дії. У словах прізвище, прізвисько, прірва пишемо прі- за традицією.",
+            mnemonic = "Зістав значення слова з правилом і окремо запам'ятай слова з прі-.",
+            examples = "прегарний, премудрий; приїхати, пришити, присісти; прізвище, прізвисько, прірва.",
+            exceptions = "Значення не завжди можна встановити механічно; перевіряй усталені слова та контекст."
+        )
+    )''')
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises + SimplificationMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises + SimplificationMissionContent.exercises + PrePriPrefixesMissionContent.exercises''')
