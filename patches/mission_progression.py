@@ -224,6 +224,28 @@ replace(game_content, '''        )
 
     val exercises = listOf(''')
 replace(game_content, '''    ) + MissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises''')
+
+# Copy the apostrophe curriculum batch (one complete five-mission topic).
+apostrophe_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/ApostropheMissionContent.kt"
+apostrophe_target = root / "app/src/main/java/ua/chroniclesofwords/learning/ApostropheMissionContent.kt"
+apostrophe_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(apostrophe_source, apostrophe_target)
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises''')
+replace(game_content, '''            exceptions = "На межі префікса й кореня можуть виникати збіги однакових або різних приголосних."
+        )
+    )''', '''            exceptions = "На межі префікса й кореня можуть виникати збіги однакових або різних приголосних."
+        ),
+        RuleCard(
+            id = "apostrophe",
+            title = "Апостроф",
+            paragraph = "§ 7",
+            explanation = "Апостроф пишемо перед я, ю, є, ї після губних, р та в окремих позиціях після префіксів і першої частини складного слова.",
+            mnemonic = "Перевір губний, р, префікс і вимову перед я, ю, є, ї.",
+            examples = "п’ять, бур’ян, під’їзд, об’єкт, дит’ясла.",
+            exceptions = "Апостроф не ставимо, коли перед губним є інший кореневий приголосний, що пом’якшує його в нормативних словах."
+        )
+    )''')
+
 replace(game_content, '''                { entry -> rules.indexOfFirst { rule -> rule.title == entry.key.first } },
                 { entry -> entry.key.second }''', '''                { entry -> rules.indexOfFirst { rule -> rule.title == entry.key.first }.let { if (it < 0) rules.size else it } },
                 { entry -> entry.key.first },
