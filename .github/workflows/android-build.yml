@@ -41,6 +41,14 @@ jobs:
           echo "PROJECT_DIR=$project_dir" >> "$GITHUB_ENV"
           echo "Android project found at: $project_dir"
 
+      - name: Upload extracted Android source for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: chronicles-of-words-source
+          path: extracted/
+          if-no-files-found: error
+          retention-days: 3
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
