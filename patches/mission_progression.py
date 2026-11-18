@@ -187,3 +187,44 @@ mission_file = root / "app/src/main/java/ua/chroniclesofwords/learning/MissionCo
 mission_file.write_text("package ua.chroniclesofwords.learning\n\nobject MissionContent {\n    private data class Seed(\n        val topic: String, val word: String, val wrong1: String, val wrong2: String,\n        val explanation: String, val reference: String\n    )\n\n    private val seeds = listOf(\n        Seed(\"Апостроф\",\"п’ятниця\",\"пятниця\",\"пьятниця\",\"Після губного п перед я пишемо апостроф.\",\"§ 7\"),\n        Seed(\"Апостроф\",\"під’їзд\",\"підїзд\",\"підьїзд\",\"Після префікса під- перед ї ставимо апостроф.\",\"§ 7\"),\n        Seed(\"Апостроф\",\"комп’ютер\",\"компютер\",\"компьютер\",\"Після губного п перед ю пишемо апостроф.\",\"§ 7\"),\n        Seed(\"Апостроф\",\"кар’єра\",\"карєра\",\"карьєра\",\"Після р перед є в цьому слові пишемо апостроф.\",\"§ 7\"),\n        Seed(\"Апостроф\",\"торф’яний\",\"торфяний\",\"торфьяний\",\"Після губного ф перед я пишемо апостроф.\",\"§ 7\"),\n\n        Seed(\"М’який знак\",\"різьбяр\",\"різбяр\",\"різьбьяр\",\"У корені різьб- пишемо ь.\",\"§ 26\"),\n        Seed(\"М’який знак\",\"пальці\",\"палці\",\"палььці\",\"У слові пальці ь позначає м’якість л.\",\"§ 26\"),\n        Seed(\"М’який знак\",\"доньчин\",\"дончин\",\"донььчин\",\"У прикметнику доньчин зберігаємо ь основи.\",\"§ 26\"),\n        Seed(\"М’який знак\",\"кінчик\",\"кіньчик\",\"кінььчик\",\"Перед суфіксом -чик після н м’який знак не пишемо.\",\"§ 27\"),\n        Seed(\"М’який знак\",\"чотирма\",\"чотирьма\",\"чотирььма\",\"Нормативна форма — чотирма, без ь.\",\"§ 27\"),\n\n        Seed(\"Спрощення\",\"тижневий\",\"тиждневий\",\"тижднний\",\"У слові тижневий д випадає.\",\"§ 28\"),\n        Seed(\"Спрощення\",\"проїзний\",\"проїздний\",\"проїззний\",\"У групі здн випадає д: проїзд — проїзний.\",\"§ 28\"),\n        Seed(\"Спрощення\",\"щасливий\",\"щастливий\",\"щастливвий\",\"У групі стл відбувається спрощення.\",\"§ 28\"),\n        Seed(\"Спрощення\",\"пестливий\",\"песливий\",\"пестливвий\",\"У слові пестливий т зберігаємо — це виняток.\",\"§ 28, винятки\"),\n        Seed(\"Спрощення\",\"шістнадцять\",\"шіснадцять\",\"шістнадцятьь\",\"У числівнику шістнадцять т зберігаємо — це виняток.\",\"§ 28, винятки\"),\n\n        Seed(\"Подвоєння\",\"життя\",\"житя\",\"житття\",\"У слові життя подвоєння т зумовлене подовженням.\",\"§ 30\"),\n        Seed(\"Подвоєння\",\"віддати\",\"відати\",\"відддати\",\"На межі префікса від- і кореня виникає збіг дд.\",\"§ 29\"),\n        Seed(\"Подвоєння\",\"знання\",\"знаня\",\"знанння\",\"У слові знання маємо подовження н перед я.\",\"§ 30\"),\n        Seed(\"Подвоєння\",\"осінній\",\"осіний\",\"осіннній\",\"У прикметнику осінній подвоюємо н.\",\"§ 29–30\"),\n        Seed(\"Подвоєння\",\"роззброїти\",\"розброїти\",\"розззброїти\",\"На межі префікса роз- і кореня зберігаємо збіг зз.\",\"§ 29\")\n    )\n\n    private val prompts = listOf(\n        \"Обери нормативне написання слова.\",\n        \"Знайди форму, у якій правильно застосовано правило.\",\n        \"Визнач правильний варіант серед орфографічно близьких форм.\",\n        \"Перевір написання: обери єдиний нормативний варіант.\",\n        \"Розв’яжи складніше завдання: застосуй правило й урахуй винятки.\"\n    )\n\n    val exercises: List<Exercise> = (1..5).flatMap { level ->\n        seeds.mapIndexed { index, seed ->\n            val options = when ((level + index) % 3) {\n                0 -> listOf(seed.word, seed.wrong1, seed.wrong2)\n                1 -> listOf(seed.wrong1, seed.word, seed.wrong2)\n                else -> listOf(seed.wrong2, seed.wrong1, seed.word)\n            }\n            val answer = options.indexOf(seed.word)\n            Exercise(\n                id = \"extra-${level}-${index}\",\n                topic = seed.topic,\n                prompt = prompts[level - 1],\n                options = options,\n                correctIndex = answer,\n                explanation = seed.explanation + if (level >= 4) \" На цьому етапі важливо відрізняти загальне правило від позиційних умов і винятків.\" else \"\",\n                paragraph = seed.reference,\n                missionLevel = level\n            )\n        }\n    }\n}\n", encoding="utf-8")
 
 print("Mission progression patch applied.")
+
+
+# Copy the separately maintained expanded exercise bank into the extracted Android project.
+import shutil
+source_bank = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/ExtendedMissionContent.kt"
+target_bank = root / "app/src/main/java/ua/chroniclesofwords/learning/ExtendedMissionContent.kt"
+target_bank.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(source_bank, target_bank)
+
+# Register the new rule cards and append the 80 distinct tasks (2 topics x 5 missions x 8 tasks).
+game_content = "app/src/main/java/ua/chroniclesofwords/learning/GameContent.kt"
+replace(game_content, '''        )
+    )
+
+    val exercises = listOf(''', '''        ),
+        RuleCard(
+            id = "not-particle",
+            title = "НЕ з різними частинами мови",
+            paragraph = "§ 40",
+            explanation = "Написання НЕ залежить від частини мови, значення слова, наявності протиставлення та залежних слів.",
+            mnemonic = "Перевір частину мови, протиставлення й залежні слова.",
+            examples = "невідомий; не знає; не правда, а вигадка; не прочитана учнем книжка.",
+            exceptions = "Є слова, що без НЕ не вживаються, а також контекстуальні випадки."
+        ),
+        RuleCard(
+            id = "prefixes",
+            title = "Префікси з-/с-, роз-/без-",
+            paragraph = "§ 31",
+            explanation = "Префікс с- пишемо перед к, п, т, ф, х; в інших випадках переважно з-. У префіксах роз-, без- букву з зберігаємо.",
+            mnemonic = "Кафе «Птах» допомагає згадати с-; роз- і без- зберігають з.",
+            examples = "сказати, спитати, сховати; зробити, зшити; розписати, безхмарний.",
+            exceptions = "На межі префікса й кореня можуть виникати збіги однакових або різних приголосних."
+        )
+    )
+
+    val exercises = listOf(''')
+replace(game_content, '''    ) + MissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises''')
+replace(game_content, '''                { entry -> rules.indexOfFirst { rule -> rule.title == entry.key.first } },
+                { entry -> entry.key.second }''', '''                { entry -> rules.indexOfFirst { rule -> rule.title == entry.key.first }.let { if (it < 0) rules.size else it } },
+                { entry -> entry.key.first },
+                { entry -> entry.key.second }''')
