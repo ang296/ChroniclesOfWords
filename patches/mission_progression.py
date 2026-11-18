@@ -157,17 +157,7 @@ replace(g, '''    val paragraph: String
     val missionLevel: Int = 1
 )''')
 replace(g, '''    val exercises = listOf(''', '''    val exercises = listOf(''')
-replace(g, '''    )
-}''', '''    )
 
-    // Mission identity is (rule, difficulty level), not the rule name alone.
-    // Content can grow without merging later missions back into the first one.
-    val missions: List<Map.Entry<String, List<Exercise>>>
-        get() = exercises
-            .groupBy { "${it.topic} · Місія ${it.missionLevel}" }
-            .entries
-            .toList()
-}''')
 replace(m, 'GameContent.exercises.groupBy { it.topic }.entries.toList()', 'GameContent.missions')
 
 replace(m, 'GameContent.exercises.groupBy { it.topic }.entries.toList()', 'GameContent.missions')
