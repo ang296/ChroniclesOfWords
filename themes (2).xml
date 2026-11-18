@@ -1,0 +1,18 @@
+<resources>
+    <style name="Theme.ChroniclesOfWords" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/archive_gold</item>
+        <item name="android:statusBarColor">@color/archive_navy</item>
+        <item name="android:navigationBarColor">@color/archive_navy</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowBackground">@color/archive_navy</item>
+    </style>
+
+    <style name="Theme.ChroniclesOfWords.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/archive_navy</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_chronicles_mark</item>
+        <item name="windowSplashScreenAnimationDuration">350</item>
+        <item name="postSplashScreenTheme">@style/Theme.ChroniclesOfWords</item>
+    </style>
+</resources>
