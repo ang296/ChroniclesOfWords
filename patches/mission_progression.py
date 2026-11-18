@@ -238,7 +238,12 @@ soft_sign_source = Path(__file__).resolve().parent.parent / "app/src/main/java/u
 soft_sign_target = root / "app/src/main/java/ua/chroniclesofwords/learning/SoftSignMissionContent.kt"
 soft_sign_target.parent.mkdir(parents=True, exist_ok=True)
 shutil.copy2(soft_sign_source, soft_sign_target)
-replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises''')
+# Copy the doubled-consonant curriculum batch (five missions, eight tasks each).
+doubling_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/DoublingMissionContent.kt"
+doubling_target = root / "app/src/main/java/ua/chroniclesofwords/learning/DoublingMissionContent.kt"
+doubling_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(doubling_source, doubling_target)
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises''')
 
 replace(game_content, '''            exceptions = "На межі префікса й кореня можуть виникати збіги однакових або різних приголосних."
         )
@@ -266,6 +271,15 @@ replace(game_content, '''            exceptions = "Апостроф не ста�
             mnemonic = "Перевір позицію приголосного, словотвір і граматичну форму.",
             examples = "кінь, день, лялька, різьбяр, трьох.",
             exceptions = "У багатьох сполуках і формах ь не пишемо: гілці, свято, цвях."
+        ),
+        RuleCard(
+            id = "doubling",
+            title = "Подвоєння приголосних",
+            paragraph = "Подвоєння приголосних: подовження та збіг на межі морфем",
+            explanation = "Подвоєння виникає внаслідок подовження приголосних в окремих позиціях, а також на межі префікса й кореня або кореня й суфікса.",
+            mnemonic = "З’ясуй, чи це подовження в основі слова, чи збіг однакових приголосних на межі морфем.",
+            examples = "життя, знання, ніччю, віддати, роззброїти, осінній.",
+            exceptions = "Не кожен збіг звуків передаємо двома буквами; перевіряй будову слова та граматичну форму."
         )
     )''')
 
