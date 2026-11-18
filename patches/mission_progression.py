@@ -356,3 +356,25 @@ replace(game_content, '''            exceptions = "Не всі дієслова 
         )
     )''')
 replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises + SimplificationMissionContent.exercises''')
+
+# Copy and register the pre-/pri- prefix bank (five missions x eight tasks).
+pre_pri_source = Path(__file__).resolve().parent.parent / "app/src/main/java/ua/chroniclesofwords/learning/PrePriPrefixesMissionContent.kt"
+pre_pri_target = root / "app/src/main/java/ua/chroniclesofwords/learning/PrePriPrefixesMissionContent.kt"
+pre_pri_target.parent.mkdir(parents=True, exist_ok=True)
+shutil.copy2(pre_pri_source, pre_pri_target)
+
+replace(game_content, '''            exceptions = "Т зберігаємо, зокрема, у словах пестливий, кістлявий, хвастливий, шістнадцять, шістсот, зап'ястний, контрастний, баластний."
+        )
+    )''', '''            exceptions = "Т зберігаємо, зокрема, у словах пестливий, кістлявий, хвастливий, шістнадцять, шістсот, зап'ястний, контрастний, баластний."
+        ),
+        RuleCard(
+            id = "pre-pri-prefixes",
+            title = "Префікси пре-, при-, прі-",
+            paragraph = "Префікси пре-, при-, прі-",
+            explanation = "Пре- часто передає високий ступінь ознаки, при- — наближення, приєднання або неповноту дії. У словах прізвище, прізвисько, прірва пишемо прі- за традицією.",
+            mnemonic = "Зістав значення слова з правилом і окремо запам'ятай слова з прі-.",
+            examples = "прегарний, премудрий; приїхати, пришити, присісти; прізвище, прізвисько, прірва.",
+            exceptions = "Значення не завжди можна встановити механічно; перевіряй усталені слова та контекст."
+        )
+    )''')
+replace(game_content, '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises + SimplificationMissionContent.exercises''', '''    ) + MissionContent.exercises + ExtendedMissionContent.exercises + ApostropheMissionContent.exercises + SoftSignMissionContent.exercises + DoublingMissionContent.exercises + AlternationMissionContent.exercises + VerbConsonantAlternationMissionContent.exercises + SimplificationMissionContent.exercises + PrePriPrefixesMissionContent.exercises''')
