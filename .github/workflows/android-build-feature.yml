@@ -2,7 +2,7 @@ name: Build Android APK and App Bundle
 
 on:
   push:
-    branches: [main, master, feature/five-stage-missions]
+    branches: [main, master, feature/five-stage-missions, feature/five-stage-missions-build2]
   workflow_dispatch:
 
 permissions:
